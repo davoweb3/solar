@@ -3,5 +3,13 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "ws": "^8.18.0"
+  },
+  "scripts": {
+     "start": "concurrently \"node backend_server.js\" \"node blockchain_server.js\"",
+  "dev": "concurrently \"nodemon backend_server.js\" \"nodemon blockchain_server.js\""
+
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

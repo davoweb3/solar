@@ -5,11 +5,8 @@
     "ws": "^8.18.0"
   },
   "scripts": {
-     "start": "concurrently \"node backend_server.js\"",
+     "start": "node backend_server.js",
       "build": "echo 'No build needed'"
 
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
-  }
+}
 }

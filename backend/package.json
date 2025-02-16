@@ -7,7 +7,7 @@
   "scripts": {
      "start": "concurrently \"node backend_server.js\" \"node blockchain_server.js\"",
       "dev": "concurrently \"nodemon backend_server.js\" \"nodemon blockchain_server.js\"",
-      "build": "npm install"
+      "build": "echo 'No build needed'"
 
   },
   "devDependencies": {

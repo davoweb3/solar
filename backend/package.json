@@ -5,8 +5,7 @@
     "ws": "^8.18.0"
   },
   "scripts": {
-     "start": "concurrently \"node backend_server.js\" \"node blockchain_server.js\"",
-      "dev": "concurrently \"nodemon backend_server.js\" \"nodemon blockchain_server.js\"",
+     "start": "concurrently \"node backend_server.js\"",
       "build": "echo 'No build needed'"
 
   },

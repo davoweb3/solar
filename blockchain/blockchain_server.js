@@ -16,9 +16,9 @@ async function fetchTransactions() {
     console.log("[SCRAPER] Abriendo Sonic Scan...");
 
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: "new",
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        executablePath: process.env.CHROME_PATH || puppeteer.executablePath() // Usa el Puppeteer interno en Render
+        executablePath: process.env.CHROME_PATH || puppeteer.executablePath() // 🔹 Asegura que usa el Chrome de Puppeteer
     });
 
     const page = await browser.newPage();

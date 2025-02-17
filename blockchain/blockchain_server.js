@@ -15,17 +15,20 @@ let lastTxHashes = new Set();
 async function fetchTransactions() {
     console.log("[SCRAPER] Abriendo Sonic Scan...");
 
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"]
-    });
-
-    const page = await browser.newPage();
-    await page.goto(SONIC_SCAN_URL, { waitUntil: "networkidle2" });
-
-    console.log("[SCRAPER] Esperando a que carguen las transacciones...");
-
     try {
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+            executablePath: process.env.RENDER 
+                ? "/usr/bin/google-chrome-stable"  // Para Render
+                : undefined  // Para Local (Puppeteer usa su propio Chrome)
+        });
+
+        const page = await browser.newPage();
+        await page.goto(SONIC_SCAN_URL, { waitUntil: "networkidle2" });
+
+        console.log("[SCRAPER] Esperando a que carguen las transacciones...");
+
         await page.waitForSelector('table tbody tr', { timeout: 60000 });
 
         const transactions = await page.evaluate(() => {

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node blockchain_server.js",
-    "build": "echo 'No build needed'",
-    "postinstall": "npx puppeteer browsers install chrome"
+    "build": "echo 'No build needed'"
+   
   }
 }

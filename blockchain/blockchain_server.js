@@ -9,19 +9,29 @@ const bcWss = new WebSocket.Server({ server: bcServer });
 
 const SONIC_SCAN_URL = "https://testnet.sonicscan.org/address/0xA77884FE9B83C678689b98E877B2A2D5bAF53497";
 
-// Últimas transacciones procesadas
+// 🔹 Últimas transacciones procesadas
 let lastTxHashes = new Set();
 
+// 🔹 Función para obtener transacciones
 async function fetchTransactions() {
     console.log("[SCRAPER] Abriendo Sonic Scan...");
 
     try {
+        // 🔹 Usa Chrome embebido en Render o normal en local
         const browser = await puppeteer.launch({
             headless: true,
-            args: ["--no-sandbox", "--disable-setuid-sandbox"],
-            executablePath: process.env.RENDER 
-                ? "/usr/bin/google-chrome-stable"  // Para Render
-                : undefined  // Para Local (Puppeteer usa su propio Chrome)
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--no-first-run",
+                "--no-zygote",
+                "--single-process"  // Evita problemas en Render
+            ],
+            executablePath: process.env.RENDER
+                ? puppeteer.executablePath()  // Chrome embebido en Render
+                : undefined  // Usa Chrome normal en local
         });
 
         const page = await browser.newPage();
@@ -29,6 +39,7 @@ async function fetchTransactions() {
 
         console.log("[SCRAPER] Esperando a que carguen las transacciones...");
 
+        // Espera hasta que aparezcan las transacciones
         await page.waitForSelector('table tbody tr', { timeout: 60000 });
 
         const transactions = await page.evaluate(() => {
@@ -54,7 +65,7 @@ async function fetchTransactions() {
 
         await browser.close();
 
-        // Filtrar transacciones nuevas
+        // 🔹 Filtrar transacciones nuevas
         const newTransactions = transactions.filter(tx => !lastTxHashes.has(tx.hash));
 
         if (newTransactions.length > 0) {
@@ -63,7 +74,7 @@ async function fetchTransactions() {
             // Guardar nuevos hashes para evitar duplicados
             newTransactions.forEach(tx => lastTxHashes.add(tx.hash));
 
-            // Enviar a WebSocket
+            // 🔹 Enviar transacciones por WebSocket
             bcWss.clients.forEach(client => {
                 if (client.readyState === WebSocket.OPEN) {
                     client.send(JSON.stringify({ type: "blockchain_tx", transactions: newTransactions }));

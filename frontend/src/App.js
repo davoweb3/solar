@@ -78,7 +78,7 @@ const App = () => {
   // Función para enviar data al backend
   const sendDataToBackend = async (updatedData) => {
     try {
-      const result = await axios.post("http://localhost:3001/api/simulation", {
+      const result = await axios.post("https://fronandbackend-d6h7.onrender.com/api/simulation", {
         data: updatedData,
         weather,
       });
@@ -102,7 +102,7 @@ const App = () => {
   // WebSocket para el AI Agent
   useEffect(() => {
     const connectWebSocket = () => {
-      wsRef.current = new WebSocket("ws://192.168.10.93:8765");
+      wsRef.current = new WebSocket("https://0aee8286-0749-43b8-a437-d76ce96c1bd5-00-2ivxja85pn4h0.spock.replit.dev/");
 
       wsRef.current.onopen = () => {
         console.log("WebSocket Online");
@@ -159,19 +159,44 @@ const App = () => {
     };
   }, [retryCount]);
 
-  // Transacciones de Sonic (simuladas)
-  const handleGetSonicTransactions = async () => {
-    try {
-      const mockTx = [
-        { id: 1, from: "Alice", to: "Bob", amount: "10 KW" },
-        { id: 2, from: "Charlie", to: "Dave", amount: "5 KW" },
-      ];
-      setSonicTransactions(mockTx);
-    } catch (error) {
-      console.error("Error retrieving transactions on Sonic Network:", error);
-      setSonicTransactions([]);
-    }
-  };
+  // Nueva integración: WebSocket para recibir transacciones blockchain - CORREGIDO
+  useEffect(() => {
+    const ws = new WebSocket("https://blockchain-tx-caller.onrender.com");
+
+    const handleMessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        
+        // Validación adicional de la estructura de datos
+        if (message && message.type === "blockchain_tx" && Array.isArray(message.transactions)) {
+          console.log("📥 Nuevas transacciones recibidas:", message.transactions);
+          
+          // Actualizar estado manteniendo máximo 10 transacciones
+          setSonicTransactions(prev => [
+            ...message.transactions.slice(0, 10 - prev.length),
+            ...prev
+          ]);
+        }
+      } catch (error) {
+        console.error("❌ Error procesando transacción:", error);
+      }
+    };
+
+    ws.onopen = () => {
+      console.log("✅ Conexión WebSocket blockchain establecida");
+      ws.send(JSON.stringify({ type: "subscribe", channel: "transactions" }));
+    };
+
+    ws.onmessage = handleMessage;
+    ws.onerror = (error) => console.error("🚨 Error WebSocket:", error);
+    ws.onclose = () => console.log("🔌 Conexión WebSocket cerrada");
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, []);
 
   // Handlers
   const handleWeatherChange = (event, newWeather) => {
@@ -258,7 +283,7 @@ const App = () => {
         maxWidth: "1200px",
         margin: "auto",
         display: "flex",
-        gap: 4,
+        gap: 8,
       }}
     >
       {/* Columna Izquierda */}
@@ -494,7 +519,7 @@ const App = () => {
             variant="contained"
             color="primary"
             onClick={handleReset}
-            sx={{ width: "460px", fontSize: "0.85rem", px: 3, py: 1 }}
+            sx={{ width: "800px", fontSize: "0.85rem", px: 3, py: 1 }}
           >
             RANDOMIZE CONSUMPTION
           </Button>
@@ -528,37 +553,39 @@ const App = () => {
               }}
             >
               <img
-                src="https://cdn-icons-png.flaticon.com/128/3483/3483127.png" // Reemplaza con la ruta real de tu logo
+                src="https://cdn-icons-png.flaticon.com/128/3483/3483127.png"
                 alt="logo"
                 style={{ width: "30px", height: "30px" }}
               />
-              <h3 style={{ fontWeight: "bold", margin: 0 }}>Main Agent Tougths "It could take a while..."</h3>
+              <h3 style={{ fontWeight: "bold", margin: 0 }}>
+                Main Agent Tougths "It could take a while..."
+              </h3>
             </Box>
             <Box
-  sx={{
-    minHeight: "60px",
-    border: "1px solid #ddd",
-    borderRadius: 1,
-    p: 1,
-    backgroundColor: "#fff",
-    whiteSpace: "pre-wrap",
-    transition: "opacity 0.3s ease-in-out",
-  }}
->
-  {transitionState === "fade-out" || !agentThoughts ? (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <span>Thinking...</span>
-      <span role="img" aria-label="brain">
-        🧠
-      </span>
-    </Box>
-  ) : (
-    agentThoughts
-  )}
-</Box>
+              sx={{
+                minHeight: "60px",
+                border: "1px solid #ddd",
+                borderRadius: 1,
+                p: 1,
+                backgroundColor: "#fff",
+                whiteSpace: "pre-wrap",
+                transition: "opacity 0.3s ease-in-out",
+              }}
+            >
+              {transitionState === "fade-out" || !agentThoughts ? (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <span>Thinking...</span>
+                  <span role="img" aria-label="brain">
+                    🧠
+                  </span>
+                </Box>
+              ) : (
+                agentThoughts
+              )}
+            </Box>
           </Box>
 
-          {/* Panel Sonic */}
+          {/* Panel Sonic - Transacciones Blockchain Integradas */}
           <Box
             sx={{
               flex: 1,
@@ -567,21 +594,17 @@ const App = () => {
               borderRadius: 2,
               backgroundColor: "#fafafa",
               minHeight: "200px",
+              overflowY: "auto"
             }}
           >
-            <h3 style={{ fontWeight: "bold" }}>
-              Blockchain TXs....
+            <h3 style={{ fontWeight: "bold", marginBottom: "1rem" }}>
+              Recent Blockchain Transactions on Sonic Blaze
             </h3>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleGetSonicTransactions}
-              sx={{ mb: 2 }}
-            >Get Transactions
-            </Button>
             <Box
               sx={{
                 minHeight: "60px",
+                minWidth : "400px",
+                maxHeight :"600px",
                 border: "1px solid #ddd",
                 borderRadius: 1,
                 p: 1,
@@ -589,17 +612,30 @@ const App = () => {
               }}
             >
               {sonicTransactions.length > 0 ? (
-                <ul>
-                  {sonicTransactions.map((tx) => (
-                    <li key={tx.id}>
-                      <strong>ID:</strong> {tx.id} | <strong>From:</strong> {tx.from} |{" "}
-                      <strong>To:</strong> {tx.to} | <strong>Amount:</strong> {tx.amount}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No Transactions so far...</p>
-              )}
+    <ul style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}>
+      {sonicTransactions.map((tx, index) => (
+        <li 
+          key={tx.id || index}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            padding: "1rem 0",
+            borderBottom: index < sonicTransactions.length - 1 ? "1px solid #eee" : "none"
+          }}
+        >
+          <div style={{ fontSize: "1rem", width: "100%" }}>
+            <strong>TX ID:</strong> {tx.id?.slice(0, 8)}...<br />
+            <strong>From:</strong> {tx.from?.slice(0, 6)}...{tx.from?.slice(-4)}<br />
+            <strong>To:</strong> {tx.to?.slice(0, 6)}...{tx.to?.slice(-4)}<br />
+            <strong>Amount:</strong> {Number(tx.amount).toFixed(2)} kWh
+          </div>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p style={{ margin: 0, color: "#666" }}>Waiting for blockchain transactions...</p>
+  )}
             </Box>
           </Box>
         </Box>

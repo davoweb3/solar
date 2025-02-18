@@ -22,43 +22,30 @@ const logData = (message, data) => {
 app.post('/api/simulation', (req, res) => {
   const { data, weather } = req.body;
 
-  // Net energy balance calculation
+  // Net energy balance calculation (only for debugging, not sent to AI)
   const totalNetEnergy = data.reduce(
     (acc, item) => acc + (item.generation - item.consumption),
     0
   );
 
-  // Determine action with the public grid
-  const publicGridAction = totalNetEnergy < 0
-    ? `Purchase of ${Math.abs(totalNetEnergy).toFixed(2)} kWh from the Public Grid`
-    : totalNetEnergy > 0
-    ? `Sale of ${totalNetEnergy.toFixed(2)} kWh to the Public Grid`
-    : 'Perfect Energy Balance (No purchase or sale)';
-
-  // Complete data for the AI Agent
+  // Payload to send to AI - Only raw data, NO publicGridAction
   const aiPayload = {
     weather,
-    totalNetEnergy,
-    publicGridAction,
-    houses: data,
-    publicGrid: {
-      balance: totalNetEnergy,
-      status: publicGridAction
-    }
+    houses: data, // Houses' energy data (generation, consumption, etc.)
   };
 
-  // Log received data and public grid actions
+  // Log received data
   logData('Received data from frontend', { weather, data });
-  logData('Public grid action', { publicGridAction });
+  logData('Calculated Net Energy (for debugging only)', { totalNetEnergy });
 
-  // Send complete data to the AI agent via WebSocket
+  // Send data to AI agent via WebSocket (without Public Grid bias)
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(aiPayload));
     }
   });
 
-  res.status(200).json({ message: 'Data processed successfully', publicGridAction });
+  res.status(200).json({ message: 'Data processed successfully' });
 });
 
 // WebSocket for real-time communication with the AI agent

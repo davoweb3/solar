@@ -161,7 +161,7 @@ const App = () => {
 
   // Nueva integración: WebSocket para recibir transacciones blockchain - CORREGIDO
   useEffect(() => {
-    const ws = new WebSocket("https://blockchain-tx-caller.onrender.com");
+    const ws = new WebSocket("https://3202-210-211-62-125.ngrok-free.app");
 
     const handleMessage = (event) => {
       try {

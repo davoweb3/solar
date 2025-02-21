@@ -1,48 +1,58 @@
 import React, { useState, useEffect, useRef } from "react";
-import Slider from "@mui/material/Slider";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import CasinoIcon from "@mui/icons-material/Casino";
+import Tooltip from "@mui/material/Tooltip";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   Title,
-  Tooltip,
+  Tooltip as ChartTooltip,
   Legend,
   BarElement,
   CategoryScale,
   LinearScale,
 } from "chart.js";
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+// Registrar componentes de chart.js
+ChartJS.register(Title, ChartTooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const MAX_PRODUCTION = 5;
 const MAX_DEFICIT = 2;
 
+// Impacto del clima sobre producción
 const weatherImpact = {
   sunny: 1,
   windy: 0.8,
   foggy: 0.4,
-  rainy: 0.3,
+  rainy: 0,
 };
 
-// Mapeo de direcciones (se usan solo las address)
+// Direcciones de wallet
 const walletAddresses = {
-  H1: "0x...84FC",
-  H2: "0x...3511",
-  H3: "0x...7CC6",
-  H4: "0x...0b46",
-  PublicGrid: "0x...B98A",
+  H1: "0xE860ADA0513Cd6490684BC23e04B27E410DE84FC",
+  H2: "0x9ac8253474Ea11CcadE156324A4cD36B60773511",
+  H3: "0x5EFF96BE67aa638E17Fef1Aa682038E8B9F77CC6",
+  H4: "0xEa35dE96dAC85be0BE9af15EC71a4978a3070b46",
+  PublicGrid: "0x555555555555555",
 };
 
+// Par de constantes para SonicScan
+const SONIC_API_KEY = "ZKT31GHIWB4NYI12CIVBJREQX18FYPYGCS";
+const SONIC_CONTRACT = "0xA77884FE9B83C678689b98E877B2A2D5bAF53497"; // tu token en testnet
+const SONIC_DECIMALS = 18; // asumiendo 18 decimales
+
+// Función para calcular factor de potencia (aunque no se muestre)
 function calculatePowerFactor(voltage, current) {
   const realPower = voltage * current;
   const apparentPower = voltage * current;
   return realPower / apparentPower;
 }
 
+// Generar data inicial con consumo = 0
 function generateInitialData(production) {
   const voltage = 110;
   const current = 10;
@@ -51,7 +61,7 @@ function generateInitialData(production) {
     return {
       house: `H${i + 1}`,
       generation: production,
-      consumption: Math.floor(Math.random() * (7 - 4 + 1)) + 4,
+      consumption: 0,
       voltage: voltage.toFixed(1),
       powerFactor: powerFactor.toFixed(2),
     };
@@ -59,23 +69,79 @@ function generateInitialData(production) {
 }
 
 const App = () => {
-  // Estados principales
   const [weather, setWeather] = useState("sunny");
   const [production, setProduction] = useState(MAX_PRODUCTION * weatherImpact[weather]);
   const [data, setData] = useState(generateInitialData(production));
   const [response, setResponse] = useState("");
-
-  // WebSocket para el AI Agent
   const [agentThoughts, setAgentThoughts] = useState("");
   const [transitionState, setTransitionState] = useState("fade-in");
   const [retryCount, setRetryCount] = useState(0);
   const wsRef = useRef(null);
   const retryTimeoutRef = useRef(null);
-
-  // Transacciones de Sonic
   const [sonicTransactions, setSonicTransactions] = useState([]);
 
-  // Función para enviar data al backend
+  // Estado para saldos de cada Hx (sin PublicGrid, salvo que quieras mostrar en su medidor)
+  const [houseBalances, setHouseBalances] = useState({
+    H1: null,
+    H2: null,
+    H3: null,
+    H4: null,
+  });
+
+  // Llamada a la API de SonicScan para un address
+  async function fetchSonicBalance(address) {
+    try {
+      const url = `https://api-testnet.sonicscan.org/api?module=account&action=tokenbalance&contractaddress=${SONIC_CONTRACT}&address=${address}&tag=latest&apikey=${SONIC_API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      // data.result => "993668000000000000000000"
+      if (data.status !== "1" || !data.result) {
+        // Error en la API
+        return null;
+      }
+      const rawBalance = data.result;
+      const balanceNum = Number(rawBalance);
+      if (Number.isNaN(balanceNum)) {
+        return null;
+      }
+      const formatted = balanceNum / 10 ** SONIC_DECIMALS;
+      return formatted;
+    } catch (err) {
+      console.error("Error fetching from SonicScan:", err);
+      return null;
+    }
+  }
+
+  // Llamada para obtener balances en H1..H4
+  async function fetchAllHouseBalances() {
+    try {
+      const newBal = { ...houseBalances };
+      // H1
+      newBal.H1 = await fetchSonicBalance(walletAddresses.H1);
+      // H2
+      newBal.H2 = await fetchSonicBalance(walletAddresses.H2);
+      // H3
+      newBal.H3 = await fetchSonicBalance(walletAddresses.H3);
+      // H4
+      newBal.H4 = await fetchSonicBalance(walletAddresses.H4);
+
+      setHouseBalances(newBal);
+    } catch (error) {
+      console.error("Error fetching all house balances:", error);
+    }
+  }
+
+  // Efecto que refresca cada 30s
+  useEffect(() => {
+    // Al montar, llama una vez
+    fetchAllHouseBalances();
+
+    // Luego cada 30s
+    const intervalId = setInterval(fetchAllHouseBalances, 30000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Enviar data al backend
   const sendDataToBackend = async (updatedData) => {
     try {
       const result = await axios.post("https://fronandbackend-d6h7.onrender.com/api/simulation", {
@@ -88,7 +154,7 @@ const App = () => {
     }
   };
 
-  // Al cambiar el clima
+  // Actualizar producción al cambiar el clima
   useEffect(() => {
     const newProduction = MAX_PRODUCTION * weatherImpact[weather];
     setProduction(newProduction);
@@ -99,10 +165,12 @@ const App = () => {
     sendDataToBackend(newData);
   }, [weather]);
 
-  // WebSocket para el AI Agent
+  // Conexión WebSocket principal (para agentThoughts)
   useEffect(() => {
     const connectWebSocket = () => {
-      wsRef.current = new WebSocket("https://0aee8286-0749-43b8-a437-d76ce96c1bd5-00-2ivxja85pn4h0.spock.replit.dev/");
+      wsRef.current = new WebSocket(
+        "wss://0aee8286-0749-43b8-a437-d76ce96c1bd5-00-2ivxja85pn4h0.spock.replit.dev/"
+      );
 
       wsRef.current.onopen = () => {
         console.log("WebSocket Online");
@@ -159,22 +227,21 @@ const App = () => {
     };
   }, [retryCount]);
 
-  // Nueva integración: WebSocket para recibir transacciones blockchain - CORREGIDO
+  // Conexión WebSocket para transacciones blockchain
   useEffect(() => {
-    const ws = new WebSocket("https://3202-210-211-62-125.ngrok-free.app");
+    const ws = new WebSocket("wss://3202-210-211-62-125.ngrok-free.app");
 
     const handleMessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        
-        // Validación adicional de la estructura de datos
+
         if (message && message.type === "blockchain_tx" && Array.isArray(message.transactions)) {
           console.log("📥 Nuevas transacciones recibidas:", message.transactions);
-          
-          // Actualizar estado manteniendo máximo 10 transacciones
-          setSonicTransactions(prev => [
+
+          // Tomamos hasta 10 transacciones y las agregamos
+          setSonicTransactions((prev) => [
             ...message.transactions.slice(0, 10 - prev.length),
-            ...prev
+            ...prev,
           ]);
         }
       } catch (error) {
@@ -198,63 +265,65 @@ const App = () => {
     };
   }, []);
 
-  // Handlers
-  const handleWeatherChange = (event, newWeather) => {
-    if (newWeather !== null) setWeather(newWeather);
-  };
-
-  const handleSliderChange = (index, newValue) => {
-    setData((prevData) => {
-      const newData = [...prevData];
-      newData[index].consumption = newValue;
-      sendDataToBackend(newData);
-      return newData;
-    });
-  };
-
+  // Función para randomizar el consumo
   const handleReset = () => {
-    const newData = generateInitialData(production);
+    const scenarios = [
+      data.map((item) => ({
+        ...item,
+        generation: 5,
+        consumption: 7,
+        voltage: "110.0",
+        powerFactor: calculatePowerFactor(110, 10).toFixed(2),
+      })),
+      data.map((item) => ({
+        ...item,
+        generation: production,
+        consumption: 0,
+        voltage: "110.0",
+        powerFactor: calculatePowerFactor(110, 10).toFixed(2),
+      })),
+      data.map((item) => ({
+        ...item,
+        generation: production,
+        consumption: Math.floor(Math.random() * (production + MAX_DEFICIT + 1)),
+        voltage: "110.0",
+        powerFactor: calculatePowerFactor(110, 10).toFixed(2),
+      })),
+    ];
+
+    const newData = scenarios[Math.floor(Math.random() * scenarios.length)];
     setData(newData);
     sendDataToBackend(newData);
   };
 
-  // Cálculo del balance
+  // Calcular el balance de energía neta
   const totalNetEnergy = data.reduce(
     (acc, item) => acc + (item.generation - item.consumption),
     0
   );
-  const publicGridAction =
-    totalNetEnergy < 0
-      ? `Buying ${Math.abs(totalNetEnergy).toFixed(2)} kWh from Public Grid`
-      : totalNetEnergy > 0
-      ? `Selling ${totalNetEnergy.toFixed(2)} kWh to Public Grid`
-      : "Sistem On Balance";
 
-  // Color del cable
-  let cableColor = "black";
-  if (totalNetEnergy > 0) cableColor = "red";
-  else if (totalNetEnergy < 0) cableColor = "green";
-
-  // Gráfica
+  // Data para el gráfico de barras
   const chartData = {
     labels: data.map((item) => item.house),
     datasets: [
       {
         label: "Energy Consumption (kWh)",
         data: data.map((item) => item.consumption),
-        backgroundColor: "rgba(64, 11, 255, 0.2)",
-        borderColor: "rgb(63, 80, 233)",
+        backgroundColor: "rgba(81, 237, 9, 0.88)",
+        borderColor: "rgb(71, 233, 63)",
         borderWidth: 1,
       },
     ],
   };
+
+  // Opciones del gráfico
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       title: {
         display: true,
-        text: "Egergy Consumptions per House",
+        text: "Energy Consumptions per House",
         font: { size: 20 },
       },
       tooltip: {
@@ -277,34 +346,31 @@ const App = () => {
   };
 
   return (
-    <Box
-      sx={{
-        p: 4,
-        maxWidth: "1200px",
-        margin: "auto",
-        display: "flex",
-        gap: 8,
-      }}
-    >
-      {/* Columna Izquierda */}
+    <Box sx={{ p: 4, maxWidth: "1200px", margin: "auto", display: "flex", gap: 8 }}>
+      {/* COLUMNA IZQUIERDA */}
       <Box sx={{ width: "60%" }}>
         <h1 style={{ textAlign: "center", fontSize: "24px", fontWeight: "bold" }}>
           Solarmetrics Panel
         </h1>
+
+        {/* Selección de clima */}
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2, my: 2 }}>
           <ToggleButtonGroup
             value={weather}
             exclusive
-            onChange={handleWeatherChange}
+            onChange={(_, newWeather) => {
+              if (newWeather !== null) setWeather(newWeather);
+            }}
             aria-label="weather selection"
           >
             <ToggleButton value="sunny">☀️ Sunny</ToggleButton>
-            <ToggleButton value="windy">🌬️ Windy</ToggleButton>
+            <ToggleButton value="windy">💨 Windy</ToggleButton>
             <ToggleButton value="foggy">🌫️ Foggy</ToggleButton>
-            <ToggleButton value="rainy">🌧️ Rainy</ToggleButton>
+            <ToggleButton value="rainy">🌧️ Night</ToggleButton>
           </ToggleButtonGroup>
         </Box>
 
+        {/* Info de producción y balance neto */}
         <h2 style={{ textAlign: "center", fontSize: "20px", margin: "16px 0" }}>
           Net Energy Production per House: {production.toFixed(2)} kWh
         </h2>
@@ -312,25 +378,25 @@ const App = () => {
           Net Energy Balance : {totalNetEnergy.toFixed(2)} kWh
         </h2>
 
-        {/* FILA: Medidor Público y 4 medidores */}
         <Box
           sx={{
             position: "relative",
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             gap: 4,
             mt: 3,
           }}
         >
-          {/* Medidor Público */}
+          {/* MEDIDOR PUBLIC GRID */}
           <Box
             sx={{
-              width: "230px",
+              position: "relative",
+              width: "330px",
               minHeight: "330px",
               border: "2px solid #ccc",
-              borderRadius: "6px",
-              backgroundColor: "#fff",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              borderRadius: "10px",
+              background: "linear-gradient(180deg, #b6fcb6 0%, #48c774 100%)", 
+              boxShadow: "inset 0 0 6px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.2)",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -338,202 +404,351 @@ const App = () => {
               zIndex: 2,
             }}
           >
+            {/* Botón RANDOMIZE - más separado (top: -64px) */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: "-64px",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              <Tooltip title="Randomize Consumption">
+                <Button
+                  onClick={handleReset}
+                  variant="contained"
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: "50%",
+                    minWidth: 0,
+                    backgroundColor: "#c0392b",
+                    "&:hover": {
+                      backgroundColor: "#e74c3c",
+                    },
+                  }}
+                >
+                  <CasinoIcon fontSize="medium" />
+                </Button>
+              </Tooltip>
+            </Box>
+
+            {/* Encabezado del medidor */}
             <Box
               sx={{
                 width: "100%",
                 textAlign: "center",
-                borderBottom: "1px solid #ccc",
-                pb: 0.5,
+                borderBottom: "1px solid rgba(0,0,0,0.2)",
+                pb: 1,
+                mt: 4,
+                color: "#073c07", // Verde oscuro
               }}
             >
-              <span style={{ color: "green", fontSize: "1.2rem", marginRight: "4px" }}>
-                ⚡
-              </span>
-              <span style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
-                Public Energy Network Meter
+              <span style={{ fontSize: "1.2rem", marginRight: "4px" }}>⚡</span>
+              <span style={{ fontWeight: "bold", fontSize: "0.95rem" }}>
+                PUBLIC GRID METER
               </span>
             </Box>
+
+            {/* Display con el status */}
             <Box
               sx={{
-                mt: 1,
+                mt: 2,
                 width: "90%",
-                border: "2px inset #999",
-                backgroundColor: "#fafafa",
+                border: "2px inset rgba(0,0,0,0.25)",
+                backgroundColor: "rgba(255,255,255,0.8)",
                 p: 1,
                 textAlign: "center",
                 fontFamily: "monospace",
                 fontSize: "1rem",
                 color: "#333",
+                borderRadius: "4px",
               }}
             >
               <div style={{ fontSize: "0.9rem", fontWeight: "bold" }}>
-                {publicGridAction}
+                {totalNetEnergy > 0
+                  ? "Waiting for Buying Energy"
+                  : totalNetEnergy < 0
+                  ? "Waiting for Selling Energy"
+                  : "System Balanced"}
               </div>
             </Box>
-            {/* Wallet para Public Grid */}
+
+            {/* Wallet info */}
             <Box
               sx={{
-                mt: 1,
+                mt: 2,
                 fontSize: "0.75rem",
                 textAlign: "center",
-                color: "#777",
+                color: "#073c07",
+                fontWeight: "bold",
+                width: "100%",
+                padding: "4px",
               }}
             >
               Agent Wallet: {walletAddresses.PublicGrid}
             </Box>
           </Box>
 
-          {/* Grid de 4 medidores individuales */}
+          {/* TARJETAS SONICMETER DE CADA CASA */}
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-            {data.map((item, index) => {
-              const deficit =
-                item.consumption > item.generation
-                  ? (item.consumption - item.generation).toFixed(2)
-                  : 0;
+            {data.map((item) => {
+              // Calcular si hay Surplus, Deficit o Balanced
+              const difference = item.generation - item.consumption;
+              let balanceStatus = "";
+              let balanceColor = "#e74c3c";
+
+              if (difference > 0) {
+                balanceStatus = `Surplus: ${difference.toFixed(2)} kWh`;
+                balanceColor = "#2ecc71";
+              } else if (difference < 0) {
+                balanceStatus = `Deficit: ${Math.abs(difference).toFixed(2)} kWh`;
+                balanceColor = "#e74c3c";
+              } else {
+                balanceStatus = "Balanced";
+                balanceColor = "#7f8c8d";
+              }
+
               return (
                 <Box
                   key={`${item.house}-${weather}`}
                   sx={{
                     width: "230px",
                     minHeight: "330px",
-                    border: "2px solid #ccc",
-                    borderRadius: "6px",
-                    backgroundColor: "#fff",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    border: "3px solid #2c3e50",
+                    borderRadius: "12px",
+                    background: "linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%)",
+                    boxShadow:
+                      "0 4px 8px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.9)",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    p: 1,
+                    p: 2,
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
+                  {/* Panel solar decorativo */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      width: "40px",
+                      height: "40px",
+                      background: "linear-gradient(135deg, #4a90e2 0%, #357abd 100%)",
+                      clipPath: "polygon(100% 0, 0 0, 100% 100%)",
+                      "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        top: "5px",
+                        right: "5px",
+                        width: "15px",
+                        height: "15px",
+                        background: "#ffd700",
+                        borderRadius: "50%",
+                      },
+                    }}
+                  />
+
+                  {/* Encabezado del medidor */}
                   <Box
                     sx={{
                       width: "100%",
                       textAlign: "center",
-                      borderBottom: "1px solid #ccc",
-                      pb: 0.5,
+                      borderBottom: "2px solid #3498db",
+                      pb: 1,
+                      mb: 2,
                     }}
                   >
-                    <span style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                    <span
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        color: "#2c3e50",
+                        textShadow: "1px 1px 1px rgba(255,255,255,0.8)",
+                      }}
+                    >
                       SONICMETER
                     </span>
                     <br />
-                    <span style={{ fontSize: "0.7rem", color: "#666" }}>
-                      SDM72DR
+                    <span
+                      style={{
+                        fontSize: "0.7rem",
+                        color: "#7f8c8d",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      SDM72DR-SOLAR
                     </span>
                   </Box>
 
+                  {/* Display digital - Generación */}
                   <Box
                     sx={{
-                      mt: 1,
                       width: "90%",
-                      border: "2px inset #999",
-                      backgroundColor: "#fafafa",
-                      p: 1,
+                      border: "3px solid #95a5a6",
+                      borderRadius: "8px",
+                      background: "linear-gradient(180deg, #2c3e50 0%, #34495e 100%)",
+                      p: 2,
                       textAlign: "center",
-                      fontFamily: "monospace",
-                      fontSize: "1.1rem",
-                      color: "#333",
+                      fontFamily: "'Digital-7', monospace",
+                      position: "relative",
+                      mb: 2,
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: "2px",
+                        background:
+                          "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                      },
                     }}
                   >
-                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                    <div
+                      style={{
+                        fontSize: "1.4rem",
+                        fontWeight: "bold",
+                        color: "#2ecc71",
+                        textShadow: "0 0 5px rgba(46,204,113,0.5)",
+                      }}
+                    >
                       {Number(item.generation).toFixed(1)} kWh
                     </div>
-                    <div style={{ fontSize: "0.7rem", marginTop: "4px" }}>
-                      (Currently Generated)
+                    <div
+                      style={{
+                        fontSize: "0.7rem",
+                        color: "#bdc3c7",
+                        marginTop: "4px",
+                      }}
+                    >
+                      (Solar Generation)
                     </div>
                   </Box>
 
+                  {/* Display digital - Consumo */}
+                  <Box
+                    sx={{
+                      width: "90%",
+                      border: "3px solid #95a5a6",
+                      borderRadius: "8px",
+                      background: "linear-gradient(180deg, #2c3e50 0%, #34495e 100%)",
+                      p: 2,
+                      textAlign: "center",
+                      fontFamily: "'Digital-7', monospace",
+                      position: "relative",
+                      mb: 2,
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: "2px",
+                        background:
+                          "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                      },
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "1.4rem",
+                        fontWeight: "bold",
+                        color: "#e67e22",
+                        textShadow: "0 0 5px rgba(230,126,34,0.5)",
+                      }}
+                    >
+                      {Number(item.consumption).toFixed(1)} kWh
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "0.7rem",
+                        color: "#bdc3c7",
+                        marginTop: "4px",
+                      }}
+                    >
+                      (Consumption)
+                    </div>
+                  </Box>
+
+                  {/* Balance: Sustituye la sección de Voltaje */}
+                  <Box
+                    sx={{
+                      width: "90%",
+                      fontSize: "0.8rem",
+                      color: "#34495e",
+                      textAlign: "center",
+                      mb: 1,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        padding: "4px 8px",
+                        backgroundColor: "rgba(52,152,219,0.1)",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      <span>Balance:</span>
+                      <span>
+                        {houseBalances[item.house] === null
+                          ? "N/A"
+                          : houseBalances[item.house].toLocaleString()}{" "}
+                        SOLARS
+                      </span>
+                    </div>
+                  </Box>
+
+                  {/* Surplus / Deficit / Balanced */}
                   <Box
                     sx={{
                       mt: 1,
-                      fontSize: "0.75rem",
+                      p: 1,
+                      backgroundColor: "rgba(231,76,60,0.1)",
+                      borderRadius: "4px",
+                      color: balanceColor,
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
                       textAlign: "center",
-                      color: "#444",
-                      lineHeight: 1.4,
                     }}
                   >
-                    <div>Volts: {item.voltage} V</div>
-                    <div>Power Factor: {item.powerFactor}</div>
-                    <div>Comsuption Rate: {item.consumption.toFixed(2)} kWh</div>
+                    {balanceStatus}
                   </Box>
 
-                  <Slider
-                    value={item.consumption}
-                    min={0}
-                    max={item.generation + MAX_DEFICIT}
-                    step={1}
-                    onChange={(e, val) => handleSliderChange(index, val)}
-                    sx={{ width: "90%", mt: 1 }}
-                  />
-
-                  {item.consumption > item.generation && (
-                    <Box
-                      sx={{
-                        color: "red",
-                        fontWeight: "bold",
-                        fontSize: "0.8rem",
-                        mt: 1,
-                      }}
-                    >
-                      Energy Deficit!: {deficit} kWh
-                    </Box>
-                  )}
-
-                  {/* Para la caja SONICMETER (H1) se muestra explícitamente la wallet */}
-                  {item.house === "H1" && (
-                    <Box
-                      sx={{
-                        mt: 1,
-                        fontSize: "0.75rem",
-                        textAlign: "center",
-                        color: "#777",
-                      }}
-                    >
-                      Agent 1 Wallet: 0x...84FC
-                    </Box>
-                  )}
-
-                  {/* Para H2, H3 y H4 se muestra la wallet del objeto */}
-                  {item.house !== "H1" && (
-                    <Box
-                      sx={{
-                        mt: 1,
-                        fontSize: "0.80rem",
-                        textAlign: "center",
-                        color: "#777",
-                      }}
-                    >
-                      Agent Wallet: {walletAddresses[item.house]}
-                    </Box>
-                  )}
+                  {/* Wallet */}
+                  <Box
+                    sx={{
+                      mt: 2,
+                      fontSize: "0.75rem",
+                      color: "#7f8c8d",
+                      textAlign: "center",
+                      width: "100%",
+                      padding: "4px",
+                      borderTop: "1px solid #ecf0f1",
+                    }}
+                  >
+                    Wallet: {walletAddresses[item.house]}
+                  </Box>
                 </Box>
               );
             })}
           </Box>
         </Box>
-
-        {/* Botón para Reiniciar (doble ancho) */}
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5, mt: 3 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleReset}
-            sx={{ width: "800px", fontSize: "0.85rem", px: 3, py: 1 }}
-          >
-            RANDOMIZE CONSUMPTION
-          </Button>
-        </Box>
       </Box>
 
-      {/* Columna Derecha: Chart, IA y Sonic */}
+      {/* COLUMNA DERECHA */}
       <Box sx={{ width: "60%" }}>
+        {/* Gráfico de barras */}
         <Box sx={{ height: "300px" }}>
           <Bar data={chartData} options={chartOptions} />
         </Box>
 
+        {/* Sección de Agent Thoughts & Transacciones */}
         <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
-          {/* Panel IA */}
+          {/* Panel de Agent Thoughts */}
           <Box
             sx={{
               flex: 1,
@@ -544,21 +759,14 @@ const App = () => {
               minHeight: "200px",
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                mb: 1,
-              }}
-            >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
               <img
                 src="https://cdn-icons-png.flaticon.com/128/3483/3483127.png"
                 alt="logo"
                 style={{ width: "30px", height: "30px" }}
               />
               <h3 style={{ fontWeight: "bold", margin: 0 }}>
-                Main Agent Tougths "It could take a while..."
+                Main Agent Thoughts "It could take a while..."
               </h3>
             </Box>
             <Box
@@ -585,7 +793,7 @@ const App = () => {
             </Box>
           </Box>
 
-          {/* Panel Sonic - Transacciones Blockchain Integradas */}
+          {/* Panel de transacciones blockchain */}
           <Box
             sx={{
               flex: 1,
@@ -594,7 +802,7 @@ const App = () => {
               borderRadius: 2,
               backgroundColor: "#fafafa",
               minHeight: "200px",
-              overflowY: "auto"
+              overflowY: "auto",
             }}
           >
             <h3 style={{ fontWeight: "bold", marginBottom: "1rem" }}>
@@ -603,8 +811,8 @@ const App = () => {
             <Box
               sx={{
                 minHeight: "60px",
-                minWidth : "400px",
-                maxHeight :"600px",
+                minWidth: "400px",
+                maxHeight: "600px",
                 border: "1px solid #ddd",
                 borderRadius: 1,
                 p: 1,
@@ -612,30 +820,37 @@ const App = () => {
               }}
             >
               {sonicTransactions.length > 0 ? (
-    <ul style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}>
-      {sonicTransactions.map((tx, index) => (
-        <li 
-          key={tx.id || index}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            padding: "1rem 0",
-            borderBottom: index < sonicTransactions.length - 1 ? "1px solid #eee" : "none"
-          }}
-        >
-          <div style={{ fontSize: "1rem", width: "100%" }}>
-            <strong>TX ID:</strong> {tx.id?.slice(0, 8)}...<br />
-            <strong>From:</strong> {tx.from?.slice(0, 6)}...{tx.from?.slice(-4)}<br />
-            <strong>To:</strong> {tx.to?.slice(0, 6)}...{tx.to?.slice(-4)}<br />
-            <strong>Amount:</strong> {Number(tx.amount).toFixed(2)} kWh
-          </div>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p style={{ margin: 0, color: "#666" }}>Waiting for blockchain transactions...</p>
-  )}
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}>
+                  {sonicTransactions.map((tx, index) => (
+                    <li
+                      key={tx.id || index}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                        padding: "1rem 0",
+                        borderBottom:
+                          index < sonicTransactions.length - 1
+                            ? "1px solid #eee"
+                            : "none",
+                      }}
+                    >
+                      <div style={{ fontSize: "1rem", width: "100%" }}>
+                        <strong>TX ID:</strong> {tx.id?.slice(0, 8)}...<br />
+                        <strong>From:</strong> {tx.from?.slice(0, 6)}...{tx.from?.slice(-4)}
+                        <br />
+                        <strong>To:</strong> {tx.to?.slice(0, 6)}...{tx.to?.slice(-4)}
+                        <br />
+                        <strong>Amount:</strong> {Number(tx.amount).toFixed(2)} kWh
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ margin: 0, color: "#666" }}>
+                  Waiting for blockchain transactions...
+                </p>
+              )}
             </Box>
           </Box>
         </Box>

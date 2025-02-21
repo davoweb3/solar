@@ -17,42 +17,42 @@ import {
   LinearScale,
 } from "chart.js";
 
-// Registrar componentes de chart.js
+// Register chart.js components
 ChartJS.register(Title, ChartTooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const MAX_PRODUCTION = 5;
 const MAX_DEFICIT = 2;
 
-// Impacto del clima sobre producción
+// Weather impact on production
 const weatherImpact = {
   sunny: 1,
   windy: 0.8,
   foggy: 0.4,
-  rainy: 0,
+  rainy: 0.0,
 };
 
-// Direcciones de wallet
+// Wallet addresses
 const walletAddresses = {
   H1: "0xE860ADA0513Cd6490684BC23e04B27E410DE84FC",
   H2: "0x9ac8253474Ea11CcadE156324A4cD36B60773511",
   H3: "0x5EFF96BE67aa638E17Fef1Aa682038E8B9F77CC6",
   H4: "0xEa35dE96dAC85be0BE9af15EC71a4978a3070b46",
-  PublicGrid: "0x555555555555555",
+  PublicGrid: "0x2BD22357d36c99EF3aE117D7cD4170A2Ea30B98A",
 };
 
-// Par de constantes para SonicScan
+// SonicScan constants
 const SONIC_API_KEY = "ZKT31GHIWB4NYI12CIVBJREQX18FYPYGCS";
-const SONIC_CONTRACT = "0xA77884FE9B83C678689b98E877B2A2D5bAF53497"; // tu token en testnet
-const SONIC_DECIMALS = 18; // asumiendo 18 decimales
+const SONIC_CONTRACT = "0xA77884FE9B83C678689b98E877b2a2D5bAF53497"; // your testnet token
+const SONIC_DECIMALS = 18; // assuming 18 decimals
 
-// Función para calcular factor de potencia (aunque no se muestre)
+// Simple power factor calculation
 function calculatePowerFactor(voltage, current) {
   const realPower = voltage * current;
   const apparentPower = voltage * current;
   return realPower / apparentPower;
 }
 
-// Generar data inicial con consumo = 0
+// Generate initial house data
 function generateInitialData(production) {
   const voltage = 110;
   const current = 10;
@@ -73,30 +73,49 @@ const App = () => {
   const [production, setProduction] = useState(MAX_PRODUCTION * weatherImpact[weather]);
   const [data, setData] = useState(generateInitialData(production));
   const [response, setResponse] = useState("");
+
+  // AI Thoughts
   const [agentThoughts, setAgentThoughts] = useState("");
   const [transitionState, setTransitionState] = useState("fade-in");
   const [retryCount, setRetryCount] = useState(0);
   const wsRef = useRef(null);
   const retryTimeoutRef = useRef(null);
-  const [sonicTransactions, setSonicTransactions] = useState([]);
 
-  // Estado para saldos de cada Hx (sin PublicGrid, salvo que quieras mostrar en su medidor)
+  // House & PublicGrid balances
   const [houseBalances, setHouseBalances] = useState({
     H1: null,
     H2: null,
     H3: null,
     H4: null,
+    PublicGrid: null, // <-- Se agregó el balance para PublicGrid
   });
 
-  // Llamada a la API de SonicScan para un address
+  // Cuánta energía está comprando el Public Grid (si el comprador es la dirección dada)
+  const [publicGridEnergyPurchase, setPublicGridEnergyPurchase] = useState(null);
+
+  // Dirección a verificar
+  const AI_BUYER_ADDRESS = "0x2BD22357d36c99EF3aE117D7cD4170A2Ea30B98A".toLowerCase();
+
+  // Send data to backend
+  const sendDataToBackend = async (updatedData) => {
+    try {
+      const result = await axios.post("https://fronandbackend-d6h7.onrender.com/api/simulation", {
+        data: updatedData,
+        weather,
+      });
+      setResponse(result.data.publicGridAction);
+    } catch (error) {
+      console.error("Error sending data to backend:", error);
+    }
+  };
+
+  // Fetch single wallet balance
   async function fetchSonicBalance(address) {
     try {
       const url = `https://api-testnet.sonicscan.org/api?module=account&action=tokenbalance&contractaddress=${SONIC_CONTRACT}&address=${address}&tag=latest&apikey=${SONIC_API_KEY}`;
       const res = await fetch(url);
       const data = await res.json();
-      // data.result => "993668000000000000000000"
       if (data.status !== "1" || !data.result) {
-        // Error en la API
         return null;
       }
       const rawBalance = data.result;
@@ -112,18 +131,16 @@ const App = () => {
     }
   }
 
-  // Llamada para obtener balances en H1..H4
+  // Fetch all house balances every 30s
   async function fetchAllHouseBalances() {
     try {
       const newBal = { ...houseBalances };
-      // H1
       newBal.H1 = await fetchSonicBalance(walletAddresses.H1);
-      // H2
       newBal.H2 = await fetchSonicBalance(walletAddresses.H2);
-      // H3
       newBal.H3 = await fetchSonicBalance(walletAddresses.H3);
-      // H4
       newBal.H4 = await fetchSonicBalance(walletAddresses.H4);
+      // Agregamos el fetch del saldo de PublicGrid
+      newBal.PublicGrid = await fetchSonicBalance(walletAddresses.PublicGrid);
 
       setHouseBalances(newBal);
     } catch (error) {
@@ -131,30 +148,15 @@ const App = () => {
     }
   }
 
-  // Efecto que refresca cada 30s
   useEffect(() => {
-    // Al montar, llama una vez
+    // fetch house balances on mount
     fetchAllHouseBalances();
-
-    // Luego cada 30s
+    // fetch every 30 seconds
     const intervalId = setInterval(fetchAllHouseBalances, 30000);
     return () => clearInterval(intervalId);
   }, []);
 
-  // Enviar data al backend
-  const sendDataToBackend = async (updatedData) => {
-    try {
-      const result = await axios.post("https://fronandbackend-d6h7.onrender.com/api/simulation", {
-        data: updatedData,
-        weather,
-      });
-      setResponse(result.data.publicGridAction);
-    } catch (error) {
-      console.error("Error sending data to backend:", error);
-    }
-  };
-
-  // Actualizar producción al cambiar el clima
+  // Update production when weather changes
   useEffect(() => {
     const newProduction = MAX_PRODUCTION * weatherImpact[weather];
     setProduction(newProduction);
@@ -165,7 +167,7 @@ const App = () => {
     sendDataToBackend(newData);
   }, [weather]);
 
-  // Conexión WebSocket principal (para agentThoughts)
+  // WebSocket for AI thoughts
   useEffect(() => {
     const connectWebSocket = () => {
       wsRef.current = new WebSocket(
@@ -181,16 +183,40 @@ const App = () => {
       wsRef.current.onmessage = (event) => {
         console.log("Message Received (raw):", event.data);
         setTransitionState("fade-out");
+
         setTimeout(() => {
           let newMessage = event.data;
+          let parsedData = null;
+
           try {
-            const parsed = JSON.parse(event.data);
-            if (parsed.ai_decision) newMessage = parsed.ai_decision;
-            else if (parsed.thoughts) newMessage = parsed.thoughts;
-            else newMessage = JSON.stringify(parsed, null, 2);
+            parsedData = JSON.parse(event.data);
           } catch (err) {
             console.error("Can't parse JSON...:", err);
           }
+
+          // Revisamos si el JSON tiene las propiedades buyer y energyPurchased
+          // y si coincide con la dirección que queremos (AI_BUYER_ADDRESS).
+          if (parsedData && parsedData.buyer && parsedData.energyPurchased) {
+            if (parsedData.buyer.toLowerCase() === AI_BUYER_ADDRESS) {
+              setPublicGridEnergyPurchase(parsedData.energyPurchased);
+            } else {
+              // Si el buyer no es el que buscamos, no mostramos compra
+              setPublicGridEnergyPurchase(null);
+            }
+          } else {
+            // Si no viene nada relevante, limpiamos
+            setPublicGridEnergyPurchase(null);
+          }
+
+          // Ajustamos el campo agentThoughts
+          if (parsedData?.ai_decision) {
+            newMessage = parsedData.ai_decision;
+          } else if (parsedData?.thoughts) {
+            newMessage = parsedData.thoughts;
+          } else if (parsedData) {
+            newMessage = JSON.stringify(parsedData, null, 2);
+          }
+
           setAgentThoughts(newMessage);
           setTransitionState("fade-in");
         }, 300);
@@ -208,7 +234,10 @@ const App = () => {
         if (retryCount < MAX_RETRIES) {
           const delay = (retryCount + 1) * 2000;
           console.log(`Intentando reconectar en ${delay} ms...`);
-          retryTimeoutRef.current = setTimeout(() => setRetryCount((prev) => prev + 1), delay);
+          retryTimeoutRef.current = setTimeout(
+            () => setRetryCount((prev) => prev + 1),
+            delay
+          );
         } else {
           console.warn("Max attempts reached.");
         }
@@ -227,45 +256,7 @@ const App = () => {
     };
   }, [retryCount]);
 
-  // Conexión WebSocket para transacciones blockchain
-  useEffect(() => {
-    const ws = new WebSocket("wss://3202-210-211-62-125.ngrok-free.app");
-
-    const handleMessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-
-        if (message && message.type === "blockchain_tx" && Array.isArray(message.transactions)) {
-          console.log("📥 Nuevas transacciones recibidas:", message.transactions);
-
-          // Tomamos hasta 10 transacciones y las agregamos
-          setSonicTransactions((prev) => [
-            ...message.transactions.slice(0, 10 - prev.length),
-            ...prev,
-          ]);
-        }
-      } catch (error) {
-        console.error("❌ Error procesando transacción:", error);
-      }
-    };
-
-    ws.onopen = () => {
-      console.log("✅ Conexión WebSocket blockchain establecida");
-      ws.send(JSON.stringify({ type: "subscribe", channel: "transactions" }));
-    };
-
-    ws.onmessage = handleMessage;
-    ws.onerror = (error) => console.error("🚨 Error WebSocket:", error);
-    ws.onclose = () => console.log("🔌 Conexión WebSocket cerrada");
-
-    return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.close();
-      }
-    };
-  }, []);
-
-  // Función para randomizar el consumo
+  // Randomize consumption
   const handleReset = () => {
     const scenarios = [
       data.map((item) => ({
@@ -296,13 +287,13 @@ const App = () => {
     sendDataToBackend(newData);
   };
 
-  // Calcular el balance de energía neta
+  // Net energy balance
   const totalNetEnergy = data.reduce(
     (acc, item) => acc + (item.generation - item.consumption),
     0
   );
 
-  // Data para el gráfico de barras
+  // Chart data
   const chartData = {
     labels: data.map((item) => item.house),
     datasets: [
@@ -316,7 +307,7 @@ const App = () => {
     ],
   };
 
-  // Opciones del gráfico
+  // Chart options
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -347,13 +338,25 @@ const App = () => {
 
   return (
     <Box sx={{ p: 4, maxWidth: "1200px", margin: "auto", display: "flex", gap: 8 }}>
-      {/* COLUMNA IZQUIERDA */}
+      {/* LEFT COLUMN */}
       <Box sx={{ width: "60%" }}>
-        <h1 style={{ textAlign: "center", fontSize: "24px", fontWeight: "bold" }}>
+        <h1
+          style={{
+            textAlign: "center",
+            fontSize: "24px",
+            fontWeight: "bold",
+            fontFamily: "'Digital-7', monospace",
+          }}
+        >
+          <img
+            src="https://soniclabs.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F446f093d-6887-4cff-aaf8-7dc7beff2728%2F7b59c280-bdb3-4d5e-b4d9-21e009c389db%2FFullLogo_Sonic_Black.png?id=2658f549-7374-4b93-9b7c-37fb660b8469&table=block&spaceId=446f093d-6887-4cff-aaf8-7dc7beff2728&width=2000&userId=&cache=v2"
+            alt="Logo Solar"
+            style={{ verticalAlign: "middle", marginRight: "8px", width: "100px", height: "40px" }}
+          />
           Solarmetrics Panel
         </h1>
 
-        {/* Selección de clima */}
+        {/* Weather selection */}
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2, my: 2 }}>
           <ToggleButtonGroup
             value={weather}
@@ -363,18 +366,32 @@ const App = () => {
             }}
             aria-label="weather selection"
           >
-            <ToggleButton value="sunny">☀️ Sunny</ToggleButton>
-            <ToggleButton value="windy">💨 Windy</ToggleButton>
-            <ToggleButton value="foggy">🌫️ Foggy</ToggleButton>
-            <ToggleButton value="rainy">🌧️ Night</ToggleButton>
+            <ToggleButton value="sunny">☀️ Day</ToggleButton>
+            {/* <ToggleButton value="windy">💨 Windy</ToggleButton>
+            <ToggleButton value="foggy">🌫️ Foggy</ToggleButton> */}
+            <ToggleButton value="rainy">🌙 Night</ToggleButton>
           </ToggleButtonGroup>
         </Box>
 
-        {/* Info de producción y balance neto */}
-        <h2 style={{ textAlign: "center", fontSize: "20px", margin: "16px 0" }}>
+        {/* Production / Balance info */}
+        <h2
+          style={{
+            textAlign: "center",
+            fontSize: "20px",
+            margin: "16px 0",
+            fontFamily: "'Digital-7', monospace",
+          }}
+        >
           Net Energy Production per House: {production.toFixed(2)} kWh
         </h2>
-        <h2 style={{ textAlign: "center", fontSize: "20px", margin: "16px 0" }}>
+        <h2
+          style={{
+            textAlign: "center",
+            fontSize: "20px",
+            margin: "16px 0",
+            fontFamily: "'Digital-7', monospace",
+          }}
+        >
           Net Energy Balance : {totalNetEnergy.toFixed(2)} kWh
         </h2>
 
@@ -387,15 +404,15 @@ const App = () => {
             mt: 3,
           }}
         >
-          {/* MEDIDOR PUBLIC GRID */}
+          {/* PUBLIC GRID METER */}
           <Box
             sx={{
               position: "relative",
-              width: "330px",
-              minHeight: "330px",
+              width: "150px",
+              minHeight: "380px", // un poco más alto para acomodar el texto
               border: "2px solid #ccc",
               borderRadius: "10px",
-              background: "linear-gradient(180deg, #b6fcb6 0%, #48c774 100%)", 
+              background: "linear-gradient(180deg, #b6fcb6 0%, #48c774 100%)",
               boxShadow: "inset 0 0 6px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.2)",
               display: "flex",
               flexDirection: "column",
@@ -404,7 +421,7 @@ const App = () => {
               zIndex: 2,
             }}
           >
-            {/* Botón RANDOMIZE - más separado (top: -64px) */}
+            {/* RANDOMIZE button */}
             <Box
               sx={{
                 position: "absolute",
@@ -433,7 +450,7 @@ const App = () => {
               </Tooltip>
             </Box>
 
-            {/* Encabezado del medidor */}
+            {/* Meter Header */}
             <Box
               sx={{
                 width: "100%",
@@ -441,7 +458,8 @@ const App = () => {
                 borderBottom: "1px solid rgba(0,0,0,0.2)",
                 pb: 1,
                 mt: 4,
-                color: "#073c07", // Verde oscuro
+                color: "#073c07",
+                fontFamily: "'Digital-7', monospace",
               }}
             >
               <span style={{ fontSize: "1.2rem", marginRight: "4px" }}>⚡</span>
@@ -450,7 +468,7 @@ const App = () => {
               </span>
             </Box>
 
-            {/* Display con el status */}
+            {/* Status */}
             <Box
               sx={{
                 mt: 2,
@@ -467,18 +485,57 @@ const App = () => {
             >
               <div style={{ fontSize: "0.9rem", fontWeight: "bold" }}>
                 {totalNetEnergy > 0
-                  ? "Waiting for Buying Energy"
+                  ? " I am Buying Energy"
                   : totalNetEnergy < 0
-                  ? "Waiting for Selling Energy"
+                  ? "I am Selling Energy"
                   : "System Balanced"}
               </div>
             </Box>
 
-            {/* Wallet info */}
+            {/* Mostrar el balance en SOLARS */}
             <Box
               sx={{
                 mt: 2,
-                fontSize: "0.75rem",
+                fontSize: "0.85rem",
+                textAlign: "center",
+                color: "#073c07",
+                fontWeight: "bold",
+                width: "100%",
+                padding: "4px",
+                fontFamily: "'Digital-7', monospace",
+              }}
+            >
+              Balance:{" "}
+              {houseBalances.PublicGrid !== null
+                ? `${houseBalances.PublicGrid.toLocaleString()} SOLARS`
+                : "N/A"}
+            </Box>
+
+            {/* Si está comprando energía del comprador indicado */}
+            {publicGridEnergyPurchase && (
+              <Box
+                sx={{
+                  mt: 2,
+                  px: 2,
+                  textAlign: "center",
+                  fontSize: "0.8rem",
+                  fontFamily: "'Digital-7', monospace",
+                  backgroundColor: "rgba(255,255,255,0.7)",
+                  borderRadius: 2,
+                  color: "#333",
+                }}
+              >
+                Comprando {publicGridEnergyPurchase} kWh
+                <br />
+                de <strong>{AI_BUYER_ADDRESS}</strong>
+              </Box>
+            )}
+
+            {/* Wallet */}
+            <Box
+              sx={{
+                mt: 2,
+                fontSize: "0.65rem",
                 textAlign: "center",
                 color: "#073c07",
                 fontWeight: "bold",
@@ -486,14 +543,15 @@ const App = () => {
                 padding: "4px",
               }}
             >
-              Agent Wallet: {walletAddresses.PublicGrid}
+               Agent Wallet: <br />
+              0x2BD22357d36c99EF3aE11<br/>
+              7D7cD4170A2Ea30B98A
             </Box>
           </Box>
 
-          {/* TARJETAS SONICMETER DE CADA CASA */}
+          {/* SONICMETER CARDS (H1..H4) */}
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
             {data.map((item) => {
-              // Calcular si hay Surplus, Deficit o Balanced
               const difference = item.generation - item.consumption;
               let balanceStatus = "";
               let balanceColor = "#e74c3c";
@@ -528,7 +586,7 @@ const App = () => {
                     overflow: "hidden",
                   }}
                 >
-                  {/* Panel solar decorativo */}
+                  {/* Decorative Panel */}
                   <Box
                     sx={{
                       position: "absolute",
@@ -551,7 +609,7 @@ const App = () => {
                     }}
                   />
 
-                  {/* Encabezado del medidor */}
+                  {/* Meter Header */}
                   <Box
                     sx={{
                       width: "100%",
@@ -559,6 +617,7 @@ const App = () => {
                       borderBottom: "2px solid #3498db",
                       pb: 1,
                       mb: 2,
+                      fontFamily: "'Digital-7', monospace",
                     }}
                   >
                     <span
@@ -583,7 +642,7 @@ const App = () => {
                     </span>
                   </Box>
 
-                  {/* Display digital - Generación */}
+                  {/* Digital Display - Generation */}
                   <Box
                     sx={{
                       width: "90%",
@@ -628,7 +687,7 @@ const App = () => {
                     </div>
                   </Box>
 
-                  {/* Display digital - Consumo */}
+                  {/* Digital Display - Consumption */}
                   <Box
                     sx={{
                       width: "90%",
@@ -673,7 +732,7 @@ const App = () => {
                     </div>
                   </Box>
 
-                  {/* Balance: Sustituye la sección de Voltaje */}
+                  {/* Balance (replacing Voltage) */}
                   <Box
                     sx={{
                       width: "90%",
@@ -718,7 +777,7 @@ const App = () => {
                     {balanceStatus}
                   </Box>
 
-                  {/* Wallet */}
+                  {/* House Wallet */}
                   <Box
                     sx={{
                       mt: 2,
@@ -739,16 +798,16 @@ const App = () => {
         </Box>
       </Box>
 
-      {/* COLUMNA DERECHA */}
+      {/* RIGHT COLUMN */}
       <Box sx={{ width: "60%" }}>
-        {/* Gráfico de barras */}
+        {/* Bar chart */}
         <Box sx={{ height: "300px" }}>
           <Bar data={chartData} options={chartOptions} />
         </Box>
 
-        {/* Sección de Agent Thoughts & Transacciones */}
+        {/* Panel: Agent Thoughts only */}
         <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
-          {/* Panel de Agent Thoughts */}
+          {/* Agent Thoughts panel */}
           <Box
             sx={{
               flex: 1,
@@ -761,12 +820,12 @@ const App = () => {
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
               <img
-                src="https://cdn-icons-png.flaticon.com/128/3483/3483127.png"
+                src="https://i.ibb.co/QjXxKKbb/openai.gif"
                 alt="logo"
-                style={{ width: "30px", height: "30px" }}
+                style={{ width: "100px", height: "50px" }}
               />
-              <h3 style={{ fontWeight: "bold", margin: 0 }}>
-                Main Agent Thoughts "It could take a while..."
+              <h3 style={{ fontWeight: "bold", margin: 0, fontFamily: "'Digital-7', monospace" }}>
+                Main Agent Thoughts "It could take a while...mode:GPT-4"
               </h3>
             </Box>
             <Box
@@ -792,68 +851,24 @@ const App = () => {
               )}
             </Box>
           </Box>
+        </Box>
 
-          {/* Panel de transacciones blockchain */}
-          <Box
-            sx={{
-              flex: 1,
-              p: 2,
-              border: "1px solid #ccc",
-              borderRadius: 2,
-              backgroundColor: "#fafafa",
-              minHeight: "200px",
-              overflowY: "auto",
+        {/* Pie de página con el enlace */}
+        <footer style={{ marginTop: "20px", textAlign: "center" }}>
+          <a
+            href="https://testnet.sonicscan.org/token/0xa77884fe9b83c678689b98e877b2a2d5baf53497"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#007bff",
+              textDecoration: "none",
+              fontFamily: "'Digital-7', monospace",
+              fontWeight: "bold",
             }}
           >
-            <h3 style={{ fontWeight: "bold", marginBottom: "1rem" }}>
-              Recent Blockchain Transactions on Sonic Blaze
-            </h3>
-            <Box
-              sx={{
-                minHeight: "60px",
-                minWidth: "400px",
-                maxHeight: "600px",
-                border: "1px solid #ddd",
-                borderRadius: 1,
-                p: 1,
-                backgroundColor: "#fff",
-              }}
-            >
-              {sonicTransactions.length > 0 ? (
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}>
-                  {sonicTransactions.map((tx, index) => (
-                    <li
-                      key={tx.id || index}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        width: "100%",
-                        padding: "1rem 0",
-                        borderBottom:
-                          index < sonicTransactions.length - 1
-                            ? "1px solid #eee"
-                            : "none",
-                      }}
-                    >
-                      <div style={{ fontSize: "1rem", width: "100%" }}>
-                        <strong>TX ID:</strong> {tx.id?.slice(0, 8)}...<br />
-                        <strong>From:</strong> {tx.from?.slice(0, 6)}...{tx.from?.slice(-4)}
-                        <br />
-                        <strong>To:</strong> {tx.to?.slice(0, 6)}...{tx.to?.slice(-4)}
-                        <br />
-                        <strong>Amount:</strong> {Number(tx.amount).toFixed(2)} kWh
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p style={{ margin: 0, color: "#666" }}>
-                  Waiting for blockchain transactions...
-                </p>
-              )}
-            </Box>
-          </Box>
-        </Box>
+            Check TX on Sonic Blaze
+          </a>
+        </footer>
       </Box>
     </Box>
   );

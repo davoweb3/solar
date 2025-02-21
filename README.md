@@ -1,7 +1,6 @@
 # ⚡ Solarmetrics ✨🏡🌞  
 🚀 **Sonic DeFAi Hackathon 2025** – Decentralized AI-Powered Energy Trading  
 
-![Solarmetrics Banner](https://pbs.twimg.com/profile_images/1891673468799758336/FbVkw6X1_400x400.jpg)
 
 ## 🌎 Why This Matters?
 ### **Blackouts, Water Shortages & Energy Dependency – A LatAm Reality**

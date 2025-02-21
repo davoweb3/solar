@@ -74,7 +74,8 @@ A working prototype is available at:
 
 # Diagram![Solarmetrics Diagram]https://excalidraw.com/#json=U9uBkMeVXYZ7JxOHymt4D,QF_Lug3uT7agX39285TUnQ
 
-
+##Important! The demo works better with GPT-4 but its more expensive to run, If fhe demo stops working and you want to test it, drop me an email and I can topup a few bucks for testing :)
+$$ GPT-4 takes some time before processing a petition so you have to be patient, it could take between 5 -10 seconds . THis is quite faster with GPT-3.5-turbo around 2 secs.
 
 ## Join Us! 🌟
 Follow our progress and contribute to the future of **decentralized energy trading**:

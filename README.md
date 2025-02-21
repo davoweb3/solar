@@ -44,22 +44,18 @@ Solarmetrics provides a dashboard that shows how AI agents manages in a descentr
 | **Monitoring** | Real-time Web3 analytics |
 
 ## Getting Started 🚀
-### 1. Clone the Repository
+### . Clone the Repository
 ```bash
- git clone https://github.com/your-repo/solarmetrics.git
- cd solarmetrics
+ git clone https://github.com/davoweb3/solar.git
+ #You will find a few folders, each one has its own instructions, but as a tip:
+#Main Agents ( Deploy a zerepy instance with the main agen, this one takes decisions about energy trading)
+#Meter Agents ( Deploy a separate zerepy instances , this one is the Ai agents that process the transaction on sonic)
+#backend ( Generates realistic power conmsuption for each house  and connects to the frontend)
+#frontend( Deploys the main interface for testing the Demo)
+#blockchain( Contents data about the solar contract)
+As a recommendation use replit for the zerepy instances, its faster to deploy! 
 ```
-### 2. Install Dependencies
-```bash
-npm install
 ```
-### 3. Start the Application
-```bash
-npm start
-```
-### 4. Connect Your Wallet (Sonic Network Required)
-Ensure your wallet is connected to **Sonic testnet** before interacting with the platform.
-
 ## Live Demo 🌐
 A working prototype is available at:
 [Solarmetrics Web App](https://solarmetricspanel.netlify.app/)

@@ -1,0 +1,12 @@
+{
+  "files": {
+    "agents/solarmetrics.json": [
+      {
+        "id": "dc68c70a-13ea-4f84-8224-0fe83ef961b8",
+        "line": 1,
+        "version": 164,
+        "index": 0
+      }
+    ]
+  }
+}

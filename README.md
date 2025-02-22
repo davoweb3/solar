@@ -47,10 +47,12 @@ Solarmetrics provides a dashboard that shows how AI agents manages in a descentr
 ## Getting Started 🚀
 ### 1. Clone the Repository
 ```bash
- git clone https://github.com/your-repo/solarmetrics.git
- cd solarmetrics
+git clone https://github.com/your-repo/solarmetrics.git
+cd solarmetrics
 ```
-### 2. Install Dependencies
+###Note: Each folder has its own instructions for deploying. You can use Replit for one click deployment of Zerepy.
+
+### 2. Install Dependencie
 ```bash
 npm install
 ```

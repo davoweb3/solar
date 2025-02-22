@@ -81,7 +81,8 @@ A working prototype is available at:
 
 # Diagram! https://excalidraw.com/#json=U9uBkMeVXYZ7JxOHymt4D,QF_Lug3uT7agX39285TUnQ
 
-
+# Would you like to build this and automate a real life demo? I think this hardware could work with Solarmetrics ( I haven't tested it)
+A potential configuration for a full operational PoC: https://docs.google.com/document/d/1MXyi0dFkNqQx9yAEfJavzVgUdmMIsmqafII8h_IaXHI/edit?usp=sharing
 
 ## Join Us! 🌟
 Follow our progress and contribute to the future of **decentralized energy trading**:

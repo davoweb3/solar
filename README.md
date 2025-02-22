@@ -3,6 +3,18 @@
 
 **Decentralized Energy Trading for a Sustainable Future**
 
+## Motivation 🌞🌍
+Latin America faces a severe drought crisis, affecting countries like **Colombia, Ecuador, and Brazil**. Many governments are encouraging private initiatives for **solar energy generation** in homes, buildings, and residential communities. The **lack of rainfall** has led to continuous energy shortages, which could be mitigated with decentralized solar energy units.
+
+Each household can **generate between 3 to 5 kWh** daily with minimal investment in **solar panels and batteries**. During the **day**, houses can produce and trade surplus energy, while at **night**, they rely on the public grid (assuming an **on-grid system**). Existing centralized energy trading models **lack transparency and accessibility**, but now, **blockchain technology enables decentralized, fair, and automated trading**.
+
+With **Solarmetrics**, homeowners can:
+- **Sell excess energy** and earn **SOLAR tokens**.
+- **Buy affordable energy** when others in their community have a surplus.
+- **Trade energy with public utility companies**, storing tokens for future use.
+
+The goal is to **maximize clean energy injection into the grid**, promoting **sustainability** while leveraging **AI agents** to automate the entire process. Each solar meter can be integrated with an **AI agent** (e.g., running on a **Raspberry Pi**) and connected to a **bidirectional net meter** that tracks energy flow.
+
 ## Overview 🌐
 Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platform** designed to optimize solar energy **consumption and distribution** within local communities. Built on the **Sonic blockchain**, Solarmetrics enables households to **buy, sell, and monitor energy in real-time**, ensuring **fair pricing, efficiency, and sustainability**. This project is part of the **Sonic DeFAi Hackathon**.
 
@@ -36,50 +48,6 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
   - **One public AI meter** represents the **Public Energy Company/Public Grid**.
   - Each AI agent has its **own wallet address**.
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**.
-
-Example Data Format:
-```json
-{"weather":"sunny","houses":[
-  {"house":"H1","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"},
-  {"house":"H2","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"},
-  {"house":"H3","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"},
-  {"house":"H4","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"}
-]}
-```
-
-## Project Stack ⚙️
-| Component         | Technology            |
-|------------------|----------------------|
-| **Blockchain**   | Sonic Blaze          |
-| **Smart Contracts** | Solidity (ERC-20)  |
-| **Frontend**     | React, ThirdWeb, Chakra UI |
-| **Backend**      | Python (ZerePy AI Agent), Node.js (Sensor Simulation) |
-| **Monitoring**   | Real-time Web3 analytics |
-
-## Getting Started 🚀
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-repo/solar.git
-cd solarmetrics
-```
-**Note:** Each folder has its own deployment instructions. You can use **Replit** for one-click deployment of ZerePy.
-
-### 2. Install Dependencies
-```bash
-npm install
-```
-
-### 3. Start the Application
-```bash
-npm start
-```
-
-### 4. Connect Your AI Agents to the Sonic Network
-Ensure your wallet is connected to **Sonic testnet** before interacting with the platform.
-
-## Live Demo 🌐
-A working prototype is available at:
-[Solarmetrics Web App](https://solarmetricspanel.netlify.app/)
 
 ## Roadmap 👀
 - [x] Implement **real-time energy monitoring**

@@ -3,7 +3,12 @@
 
 **Decentralized Energy Trading for a Sustainable Future**
 
-## Overview
+###There is Motivation behind this project. Latam has a severe problem with drought and most countries as:Colombia, Ecuador, Brasil and others are encouraging private initiatives for solar generation in houses, buildings and living sites. The lack of rains produced a continuous energy shortage that could be easy to solve with descentralized units of solar energy generation. Each house easily can produce between 3 to 5 Kw/h with a small investment in solar panels and batteries during the day, and when the night comes the public energy grid supply the energy ( this depends either the system is On or Off-Grid) , in this case the model is an On-Grid.
+These systems are not new and they trade energy in a centralized way, until now that we have the tools to make it descentralized, transparent and accesible. Now the houseowners are empowered to sell energy ( and get that reward) or buy cheap energy when other houses in the condo has surplus, Even they can sell energy to the Public Utility Company and use the earned tokens when they need power back.
+
+The idea is to inject cleaner energy as much as possible to the grid and this way contribute with green energy and with the environment. Last but not least all this can be done using AI agents that will take care of everything. Each Solar Meter can be integrated with an AI agent ( small factor as a Raspeberry Pi?).and be connected to a Bidirectional NetMeter that sends/receives energy. Solarmetrics aims to be a system for metering these consumptions in a future. 
+
+## Overview for This Project.
 Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platform** designed to optimize solar energy consumption and distribution within local communities. Built on the **Sonic blockchain**, Solarmetrics enables households to **buy, sell, and monitor energy in real-time**, ensuring **fair pricing, efficiency, and sustainability**. This project is being developed as part of the **Sonic DeFAi Hackathon**.
 
 ## Key Features ✨

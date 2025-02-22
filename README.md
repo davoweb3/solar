@@ -22,13 +22,13 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 - 🔄 **AI-Powered Energy Optimization**: Predicts surplus/deficit energy using **real-time consumption data from energy meters**.
 - ⌚ **Automated Energy Settlement**: Secure, trustless transactions on the **Sonic blockchain**.
 - 🛠 **Real-Time Monitoring**: AI agents **monitor** energy production, consumption, and transactions via an intuitive Web3 dashboard.
-- 🔗 **AI-Driven Social Impact**: Whenever the system injects clean energy into the public grid, an **AI-generated tweet** raises awareness about decentralized renewable energy.
+
 
 ## How It Works ⚛
 1. **Energy Tokenization**: Each house receives **SOLAR tokens** based on energy contribution. *(The swap process is not developed here, but it can be easily implemented.)*
 2. **Decentralized Trading**: Users trade excess energy using **smart contracts on Sonic**.
 3. **AI & Automation**: The **ZerePy AI agent** monitors and optimizes energy allocation.
-4. **Social Engagement**: AI generates **real-time tweets** announcing clean energy injections to the public grid.
+
 
 ## Architecture ⚖️
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:

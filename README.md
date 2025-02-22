@@ -80,6 +80,7 @@ Ensure your wallet is connected to **Sonic testnet** before interacting with the
 ## Live Demo 🌐
 A working prototype is available at:
 [Solarmetrics Web App](https://solarmetricspanel.netlify.app/)
+###Important Note:Due to this a real app connected to IA using OpenAi apis and needs to be tested by the hackathon, due to the cost of working on GPT-4 model(expensive, but works better), it's likely I downgrade the model to GPT-3.5Turbo without advice and probably the responses be not so accurate as they are now. 
 
 ## Roadmap 👀
 - [x] Implement **real-time energy monitoring**
@@ -87,7 +88,8 @@ A working prototype is available at:
 - [x] Integrate **AI-generated social impact tweets**
 - [ ] Implement **token pricing based on supply/demand**
 - [ ] Launch **mainnet version**
-- [ ] Expand to **IoT-powered metering systems and real hardware integration** (for real-world applications).
+- [ ] Expand to **IoT-powered metering systems and real hardware integration** (for real-world applications and PoC).
+- [ ]  Train the model with OpenAi advanced technics for ultimate accuracy.
 
 ## Contributors 💪
 - **David Ramirez** (Blockchain & AI Integration, Frontend, Smart Contracts, Energy Simulation)

@@ -1,4 +1,3 @@
-```markdown
 # Solarmetrics ✨🏡🌌 - Sonic DeFAi Hackathon 2025
 
 **Decentralized Energy Trading for a Sustainable Future**
@@ -33,6 +32,8 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 
 ## Architecture ⚖️
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:
+
+### Tech Stack
 - **Frontend**: React + Web3 (**ThirdWeb** for wallet integration, **Chakra UI** for styling).
 - **Backend**: AI agent powered by **ZerePy**, running on a server to handle energy analytics.
 - **Smart Contracts**: **ERC-20 SOLAR token** built on **Sonic blockchain**, managed via **ThirdWeb API**.
@@ -42,6 +43,7 @@ Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, de
 ## What You Will See in the Demo 🎥
 Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentralized energy transactions**.
 
+### Components
 - **Main Agent**: The **ZerePy-based AI agent** receives **raw data** from **simulated energy sensors**, communicates with OpenAI, and makes optimal trading decisions. It determines whether **households trade among themselves or interact with the public grid**.
 - **Meter Agents**: Each **Sonic Meter** is a real **AI agent powered by ZerePy**, which listens to and interprets data, then **executes transactions** on the **Sonic Blaze testnet**.
   - **Four AI meters** represent individual households.
@@ -70,5 +72,3 @@ MIT License - Free to use and contribute!
 
 ---
 **Solarmetrics: Powering a decentralized and sustainable future!** ✨🚀
-```
-

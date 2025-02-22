@@ -33,6 +33,7 @@ Solarmetrics provides a dashboard that shows how AI agents manages in a descentr
 - **Meter Agents**: Each SONIC METER is a real AI agent powered by **ZerePy**, that listens and interprets the data and executes transactions in the Sonic Blaze testnet network , sending or receiving tokens according to the requiered surplus or deficit. There are 4 AI meters that represents a House each one and 1 AI meter that belons to the Public Energy company or Public Grid . Total 5 AI agents with a wallet address each one.
 
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**.
+{"weather":"sunny","houses":[{"house":"H1","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"},{"house":"H2","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"},{"house":"H3","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"},{"house":"H4","generation":5,"consumption":0,"voltage":"110.0","powerFactor":"1.00"}]}
 
 ## Project Stack ⚙️
 | Component | Technology |
@@ -57,7 +58,7 @@ npm install
 ```bash
 npm start
 ```
-### 4. Connect Your Wallet (Sonic Network Required)
+### 4. Connect Your AI agents to (Sonic Network Required)
 Ensure your wallet is connected to **Sonic testnet** before interacting with the platform.
 
 ## Live Demo 🌐

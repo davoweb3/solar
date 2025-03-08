@@ -36,16 +36,17 @@ Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, de
 
 ### Tech Stack
 - **Frontend**: React + Web3 (**ThirdWeb** for wallet integration, **Chakra UI** for styling).
-- **Backend**: AI agent powered by **ZerePy**, running on a server to handle energy analytics.
+- **AI Agent Infrastructure**: **ZerePy** framework for building and managing AI agent network.
+- **LLM Engine**: **OpenAI** (GPT-4 and GPT-3.5-turbo) for intelligent decision-making and natural language processing.
+- **Blockchain Data Queries**: **Nebula AI** for efficient querying of on-chain data and analytics.
 - **Smart Contracts**: **ERC-20 SOLAR token** built on **Sonic blockchain**, managed via **ThirdWeb API**.
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**, built on **Node.js**.
-- **LLM Integration**: GPT-4 and GPT-3.5-turbo from OpenAI.
 
 ## What You Will See in the Demo 🎥
 Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentralized energy transactions**.
 
 ### Components
-- **Main Agent**: The **ZerePy-based AI agent** receives **raw data** from **simulated energy sensors**, communicates with OpenAI, and makes optimal trading decisions. It determines whether **households trade among themselves or interact with the public grid**.
+- **Main Agent**: The **ZerePy-based AI agent** receives **raw data** from **simulated energy sensors**, communicates with **OpenAI's LLM**, and makes optimal trading decisions. It determines whether **households trade among themselves or interact with the public grid**. **Nebula AI** is used to query on-chain data for real-time analytics.
 - **Meter Agents**: Each **Sonic Meter** is a real **AI agent powered by ZerePy**, which listens to and interprets data, then **executes transactions** on the **Sonic Blaze testnet**.
   - **Four AI meters** represent individual households.
   - **One public AI meter** represents the **Public Energy Company/Public Grid**.
@@ -66,7 +67,7 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
 ## Join Us! 🌟
 Follow our progress and contribute to the future of **decentralized energy trading**:
 - Twitter: [@solarmetrics](https://twitter.com/solarmetrics)
-- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solar)
+- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solarmetrics)
 
 ## License ⚖️
 MIT License - Free to use and contribute!

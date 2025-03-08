@@ -5,7 +5,7 @@
 ## Motivation 🌞🌍
 Latin America faces a severe drought crisis, affecting countries like **Colombia, Ecuador, and Brazil**. Many governments are encouraging private initiatives for **solar energy generation** in homes, buildings, and residential communities. The **lack of rainfall** has led to continuous energy shortages, which could be mitigated with decentralized solar energy units.
 
-Each household can **generate between 3 to 5 kWh** daily with minimal investment in **solar panels and batteries**. During the **day**, houses can produce and trade surplus energy, while at **night**, they rely on the public grid (assuming an **on-grid system**). Existing centralized energy trading models **lack transparency and accessibility**, but now, **blockchain technology enables decentralized, fair, and automated trading**.
+Each household can **generate between 2 to 5 kWh** daily with minimal investment in **solar panels and inverters**. During the **day**, houses can produce and trade surplus energy, while at **night**, they rely on the public grid (assuming an **on-grid system**). Existing centralized energy trading models **lack transparency and accessibility**, but now, **blockchain technology enables decentralized, fair, and automated trading**.
 
 With **Solarmetrics**, homeowners can:
 - **Sell excess energy** and earn **SOLAR tokens**.

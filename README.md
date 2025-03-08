@@ -35,7 +35,7 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:
 
 ### Tech Stack
-- **Frontend**: React + Web3 (**ThirdWeb** for wallet integration, **Chakra UI** for styling).
+- **Frontend**: Next + Web3 (Vercel).
 - **AI Agent Infrastructure**: **ZerePy** framework for building and managing AI agent network.
 - **LLM Engine**: **OpenAI** (GPT-4 and GPT-3.5-turbo) for intelligent decision-making and natural language processing.
 - **Blockchain Data Queries**: **Nebula AI** for efficient querying of on-chain data and analytics.

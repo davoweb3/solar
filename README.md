@@ -54,9 +54,9 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**.
 
 ## Roadmap 👀
-- [x] Implement **real-time energy monitoring**
+- [x] Implement **real-time energy monitoring, buying and selling**
 - [x] Develop **ERC-20 SOLAR token**
-- [x] Integrate **AI-generated social impact tweets**
+- [x] Integrate **AI-agents in a descentralized way that comunicates with each other**
 - [ ] Implement **token pricing based on supply/demand**
 - [ ] Launch **mainnet version**
 - [ ] Expand to **IoT-powered metering systems and real hardware integration**.

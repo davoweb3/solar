@@ -17,18 +17,19 @@ The goal is to **maximize clean energy injection into the grid**, promoting **su
 ## Overview 🌐
 Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platform** designed to optimize solar energy **consumption and distribution** within local communities. Built on the **Sonic blockchain**, Solarmetrics enables households to **buy, sell, and monitor energy in real-time**, ensuring **fair pricing, efficiency, and sustainability**. This project is part of the **Sonic DeFAi Hackathon**.
 
+## System Architecture Diagram 📊
+[View our system architecture diagram](https://excalidraw.com/#json=KvqR5Zp6o7EIWcVWYvVAP,xqbENKX0M9ZD5B0GPEtgmQ)
+
 ## Key Features ✨
 - ⚡ **Decentralized Energy Marketplace**: Peer-to-peer (P2P) energy trading using **ERC-20 SOLAR tokens**.
 - 🔄 **AI-Powered Energy Optimization**: Predicts surplus/deficit energy using **real-time consumption data from energy meters**.
 - ⌚ **Automated Energy Settlement**: Secure, trustless transactions on the **Sonic blockchain**.
 - 🛠 **Real-Time Monitoring**: AI agents **monitor** energy production, consumption, and transactions via an intuitive Web3 dashboard.
 
-
 ## How It Works ⚛
 1. **Energy Tokenization**: Each house receives **SOLAR tokens** based on energy contribution. *(The swap process is not developed here, but it can be easily implemented.)*
 2. **Decentralized Trading**: Users trade excess energy using **smart contracts on Sonic**.
 3. **AI & Automation**: The **ZerePy AI agent** monitors and optimizes energy allocation.
-
 
 ## Architecture ⚖️
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:
@@ -65,7 +66,7 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
 ## Join Us! 🌟
 Follow our progress and contribute to the future of **decentralized energy trading**:
 - Twitter: [@solarmetrics](https://twitter.com/solarmetrics)
-- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solarmetrics)
+- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solar)
 
 ## License ⚖️
 MIT License - Free to use and contribute!

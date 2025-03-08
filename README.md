@@ -12,7 +12,7 @@ With **Solarmetrics**, homeowners can:
 - **Buy affordable energy** when others in their community have a surplus.
 - **Trade energy with public utility companies**, storing tokens for future use.
 
-The goal is to **maximize clean energy injection into the grid**, promoting **sustainability** while leveraging **AI agents** to automate the entire process. Each solar meter can be integrated with an **AI agent** (e.g., running on a **Raspberry Pi**) and connected to a **bidirectional net meter** that tracks energy flow.
+The goal is to **maximize clean energy injection into the grid**, promoting **sustainability** while leveraging **AI agents** to automate the entire process. Each solar meter could be integrated with an **AI agent** (e.g., running on a **Raspberry Pi**) and connected to a **bidirectional net meter** with some tweaking ( not covered in this demo)  that tracks energy flow and it will become a solar power meter into an intelligent AI meter!.
 
 ## Overview 🌐
 Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platform** designed to optimize solar energy **consumption and distribution** within local communities. Built on the **Sonic blockchain**, Solarmetrics enables households to **buy, sell, and monitor energy in real-time**, ensuring **fair pricing, efficiency, and sustainability**. This project is part of the **Sonic DeFAi Hackathon**.

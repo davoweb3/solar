@@ -5,14 +5,14 @@
 ## Motivation 🌞🌍
 Latin America faces a severe drought crisis, affecting countries like **Colombia, Ecuador, and Brazil**. Many governments are encouraging private initiatives for **solar energy generation** in homes, buildings, and residential communities. The **lack of rainfall** has led to continuous energy shortages, which could be mitigated with decentralized solar energy units.
 
-Each household can **generate between 3 to 5 kWh** daily with minimal investment in **solar panels and batteries**. During the **day**, houses can produce and trade surplus energy, while at **night**, they rely on the public grid (assuming an **on-grid system**). Existing centralized energy trading models **lack transparency and accessibility**, but now, **blockchain technology enables decentralized, fair, and automated trading**.
+Each household can **generate between 2 to 5 kWh** daily with minimal investment in **solar panels and inverters**. During the **day**, houses can produce and trade surplus energy, while at **night**, they rely on the public grid (assuming an **on-grid system**). Existing centralized energy trading models **lack transparency and accessibility**, but now, **blockchain technology enables decentralized, fair, and automated trading**.
 
 With **Solarmetrics**, homeowners can:
 - **Sell excess energy** and earn **SOLAR tokens**.
 - **Buy affordable energy** when others in their community have a surplus.
 - **Trade energy with public utility companies**, storing tokens for future use.
 
-The goal is to **maximize clean energy injection into the grid**, promoting **sustainability** while leveraging **AI agents** to automate the entire process. Each solar meter can be integrated with an **AI agent** (e.g., running on a **Raspberry Pi**) and connected to a **bidirectional net meter** that tracks energy flow.
+The goal is to **maximize clean energy injection into the grid**, promoting **sustainability** while leveraging **AI agents** to automate the entire process. Each solar meter could be integrated with an **AI agent** (e.g., running on a **Raspberry Pi**) and connected to a **bidirectional net meter** with some tweaking ( not covered in this demo)  that tracks energy flow and it will become a solar power meter into an intelligent AI meter!.
 
 ## Overview 🌐
 Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platform** designed to optimize solar energy **consumption and distribution** within local communities. Built on the **Sonic blockchain**, Solarmetrics enables households to **buy, sell, and monitor energy in real-time**, ensuring **fair pricing, efficiency, and sustainability**. This project is part of the **Sonic DeFAi Hackathon**.
@@ -35,7 +35,7 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:
 
 ### Tech Stack
-- **Frontend**: React + Web3 (**ThirdWeb** for wallet integration, **Chakra UI** for styling).
+- **Frontend**: Next + Web3 (Vercel).
 - **AI Agent Infrastructure**: **ZerePy** framework for building and managing AI agent network.
 - **LLM Engine**: **OpenAI** (GPT-4 and GPT-3.5-turbo) for intelligent decision-making and natural language processing.
 - **Blockchain Data Queries**: **Nebula AI** for efficient querying of on-chain data and analytics.
@@ -54,9 +54,9 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**.
 
 ## Roadmap 👀
-- [x] Implement **real-time energy monitoring**
+- [x] Implement **real-time energy monitoring, buying and selling**
 - [x] Develop **ERC-20 SOLAR token**
-- [x] Integrate **AI-generated social impact tweets**
+- [x] Integrate **AI-agents in a descentralized way that comunicates with each other**
 - [ ] Implement **token pricing based on supply/demand**
 - [ ] Launch **mainnet version**
 - [ ] Expand to **IoT-powered metering systems and real hardware integration**.

@@ -31,6 +31,27 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 2. **Decentralized Trading**: Users trade excess energy using **smart contracts on Sonic**.
 3. **AI & Automation**: The **ZerePy AI agent** monitors and optimizes energy allocation.
 
+## Project Images & Implementation 📸
+### Main Dashboard Interface
+![Solarmetrics Dashboard Interface](https://i.ibb.co/TDskyDrk/Whats-App-Image-2025-03-09-at-15-57-22.jpg)
+*The Solarmetrics real-time dashboard showing energy production, consumption, and trading activity across the network.*
+
+### Energy Trading Platform
+![Energy Trading Platform](https://i.ibb.co/RTyPVRkQ/Whats-App-Image-2025-03-09-at-15-59-51.jpg)
+*The decentralized marketplace interface where households can monitor and execute energy trades using SOLAR tokens.*
+
+### AI Agent Network Visualization
+![AI Agent Network](https://i.ibb.co/j2zPyTg/Whats-App-Image-2025-03-09-at-15-58-13.jpg)
+*Visualization of the ZerePy AI agent network showing inter-agent communication and decision-making processes.*
+
+### Energy Production Analytics
+![Energy Analytics Dashboard](https://i.ibb.co/ch9S9yHn/Whats-App-Image-2025-03-09-at-15-57-56.jpg)
+*Detailed analytics dashboard displaying household energy production and consumption patterns over time.*
+
+### Smart Contract Architecture
+![Smart Contract Architecture](https://i.ibb.co/nM8S6sD6/Whats-App-Image-2025-03-09-at-15-57-41.jpg)
+*Technical overview of the Sonic blockchain integration and SOLAR token smart contract implementation.*
+
 ## Architecture ⚖️
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:
 
@@ -53,7 +74,7 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
   - Each AI agent has its **own wallet address**.
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**.
 
-## There is plenty of room for improvement , this a probable Roadmap 👀
+## There is plenty of room for improvement, this is a probable Roadmap 👀
 - [x] Implement **real-time energy monitoring, buying and selling**
 - [x] Develop **ERC-20 SOLAR token**
 - [x] Integrate **AI-agents in a descentralized way that comunicates with each other**

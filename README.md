@@ -32,25 +32,25 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 3. **AI & Automation**: The **ZerePy AI agent** monitors and optimizes energy allocation.
 
 ## Project Images & Implementation 📸
-### Main Dashboard Interface
+### Demo Panel 
+![Smart Contract Architecture](https://i.ibb.co/nM8S6sD6/Whats-App-Image-2025-03-09-at-15-57-41.jpg)
+*Solarmetrics General Demo Screenshot*
+
+### Block Explorer View
 ![Solarmetrics Dashboard Interface](https://i.ibb.co/TDskyDrk/Whats-App-Image-2025-03-09-at-15-57-22.jpg)
 *Block Explorer transactions on Sonic*
 
-### Energy Trading Platform
+### Terminal or Retro Style available
 ![Energy Trading Platform](https://i.ibb.co/RTyPVRkQ/Whats-App-Image-2025-03-09-at-15-59-51.jpg)
 *Retro Style available too.*
 
-### AI Agent Network Visualization
+### Main AI Agent
 ![AI Agent Network](https://i.ibb.co/j2zPyTg/Whats-App-Image-2025-03-09-at-15-58-13.jpg)
 *Visualization of the ZerePy AI agent network with AI responses.*
 
-### Energy Production Analytics
+### Descentralized AI agents executing transactions on Sonic Blaze Network
 ![Energy Analytics Dashboard](https://i.ibb.co/ch9S9yHn/Whats-App-Image-2025-03-09-at-15-57-56.jpg)
 *Detailed TX executed by the Net Meters AI agents in each house according to main agent decision*
-
-### Smart Contract Architecture
-![Smart Contract Architecture](https://i.ibb.co/nM8S6sD6/Whats-App-Image-2025-03-09-at-15-57-41.jpg)
-*Solarmetrics General Demo Screenshot*
 
 ## Architecture ⚖️
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:

@@ -46,11 +46,11 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 
 ### Energy Production Analytics
 ![Energy Analytics Dashboard](https://i.ibb.co/ch9S9yHn/Whats-App-Image-2025-03-09-at-15-57-56.jpg)
-*Detailed analytics dashboard displaying household energy production and consumption patterns over time.*
+*Detailed TX executed by the Net Meters AI agents in each house according to main agent decision*
 
 ### Smart Contract Architecture
 ![Smart Contract Architecture](https://i.ibb.co/nM8S6sD6/Whats-App-Image-2025-03-09-at-15-57-41.jpg)
-*Technical overview of the Sonic blockchain integration and SOLAR token smart contract implementation.*
+*Solarmetrics General Demo Screenshot*
 
 ## Architecture ⚖️
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:

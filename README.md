@@ -68,7 +68,7 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
 ## Join Us! 🌟
 Follow our progress and contribute to the future of **decentralized energy trading**:
 - Twitter: [@solarmetrics](https://twitter.com/solarmetrics)
-- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solarmetrics)
+- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solar-git)
 
 ## License ⚖️
 MIT License - Free to use and contribute!

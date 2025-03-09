@@ -31,6 +31,27 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 2. **Decentralized Trading**: Users trade excess energy using **smart contracts on Sonic**.
 3. **AI & Automation**: The **ZerePy AI agent** monitors and optimizes energy allocation.
 
+## Project Images & Implementation 📸
+### Demo Panel 
+![Smart Contract Architecture](https://i.ibb.co/nM8S6sD6/Whats-App-Image-2025-03-09-at-15-57-41.jpg)
+*Solarmetrics General Demo Screenshot*
+
+### Block Explorer View
+![Solarmetrics Dashboard Interface](https://i.ibb.co/TDskyDrk/Whats-App-Image-2025-03-09-at-15-57-22.jpg)
+*Block Explorer transactions on Sonic*
+
+### Terminal or Retro Style available
+![Energy Trading Platform](https://i.ibb.co/RTyPVRkQ/Whats-App-Image-2025-03-09-at-15-59-51.jpg)
+*Retro Style available too.*
+
+### Main AI Agent
+![AI Agent Network](https://i.ibb.co/j2zPyTg/Whats-App-Image-2025-03-09-at-15-58-13.jpg)
+*Visualization of the ZerePy AI agent network with AI responses.*
+
+### Descentralized AI agents executing transactions on Sonic Blaze Network
+![Energy Analytics Dashboard](https://i.ibb.co/ch9S9yHn/Whats-App-Image-2025-03-09-at-15-57-56.jpg)
+*Detailed TX executed by the Net Meters AI agents in each house according to main agent decision*
+
 ## Architecture ⚖️
 Solarmetrics integrates **DeFi, AI, and blockchain** to enable **transparent, decentralized energy trading**:
 
@@ -53,13 +74,14 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
   - Each AI agent has its **own wallet address**.
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**.
 
-## Roadmap 👀
+## There is plenty of room for improvement, this is a probable Roadmap 👀
 - [x] Implement **real-time energy monitoring, buying and selling**
 - [x] Develop **ERC-20 SOLAR token**
 - [x] Integrate **AI-agents in a descentralized way that comunicates with each other**
 - [ ] Implement **token pricing based on supply/demand**
 - [ ] Launch **mainnet version**
 - [ ] Expand to **IoT-powered metering systems and real hardware integration**.
+- [ ] Integrate a **"comitee-model" with 2 or more LLMs for advanced energy forecasting**.
 
 ## Contributors 💪
 - **David Ramirez** (Blockchain & AI Integration, Frontend, Smart Contracts, Energy Simulation)
@@ -67,7 +89,7 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
 ## Join Us! 🌟
 Follow our progress and contribute to the future of **decentralized energy trading**:
 - Twitter: [@solarmetrics](https://twitter.com/solarmetrics)
-- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solarmetrics)
+- GitHub: [Solarmetrics Repo](https://github.com/your-repo/solar-git)
 
 ## License ⚖️
 MIT License - Free to use and contribute!

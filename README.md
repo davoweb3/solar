@@ -34,7 +34,7 @@ Solarmetrics is a **DeFi-powered, AI-enhanced decentralized energy trading platf
 ## Project Images & Implementation 📸
 ### Main Dashboard Interface
 ![Solarmetrics Dashboard Interface](https://i.ibb.co/TDskyDrk/Whats-App-Image-2025-03-09-at-15-57-22.jpg)
-*The Solarmetrics real-time dashboard showing energy production, consumption, and trading activity across the network.*
+*Block Explorer transactions on Sonic*
 
 ### Energy Trading Platform
 ![Energy Trading Platform](https://i.ibb.co/RTyPVRkQ/Whats-App-Image-2025-03-09-at-15-59-51.jpg)

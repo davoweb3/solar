@@ -53,13 +53,14 @@ Solarmetrics provides a **dashboard** showcasing how **AI agents manage decentra
   - Each AI agent has its **own wallet address**.
 - **Energy Data Simulation**: Uses real-world energy patterns to **simulate grid behavior**.
 
-## Roadmap 👀
+## There is plenty of room for improvement , this a probable Roadmap 👀
 - [x] Implement **real-time energy monitoring, buying and selling**
 - [x] Develop **ERC-20 SOLAR token**
 - [x] Integrate **AI-agents in a descentralized way that comunicates with each other**
 - [ ] Implement **token pricing based on supply/demand**
 - [ ] Launch **mainnet version**
 - [ ] Expand to **IoT-powered metering systems and real hardware integration**.
+- [ ] Integrate a **"comitee-model" with 2 or more LLMs for advanced energy forecasting**.
 
 ## Contributors 💪
 - **David Ramirez** (Blockchain & AI Integration, Frontend, Smart Contracts, Energy Simulation)
